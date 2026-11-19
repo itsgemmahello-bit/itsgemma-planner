@@ -326,7 +326,7 @@ footer.foot{display:flex;justify-content:space-between;align-items:center;gap:10
   function api(path, opts) {
     opts = opts || {};
     return fetch("/api/" + path, { method: opts.method || "GET", headers: { "content-type": "application/json" }, credentials: "same-origin", body: opts.body ? JSON.stringify(opts.body) : undefined })
-      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { status: r.status, data: j }; }); });
+      .then(function (r) { return r.json().catch(function () { return { detail: "HTTP " + r.status + " from /api/" + path }; }).then(function (j) { return { status: r.status, data: j }; }); });
   }
   function backup() { try { if (me) localStorage.setItem("xmas-backup", JSON.stringify(state)); } catch (e) {} }
 
