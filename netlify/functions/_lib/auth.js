@@ -1,4 +1,4 @@
-const crypto = require('crypto');
+import crypto from 'node:crypto';
 
 // Same pattern as the FM client hub: a personal link swaps for a year-long signed cookie.
 const SECRET = () => {
@@ -50,4 +50,4 @@ function rateLimited(key, max = 10, windowMs = 10 * 60e3) {
 }
 const ip = (event) => (event.headers['x-nf-client-connection-ip'] || event.headers['x-forwarded-for'] || '').split(',')[0].trim() || 'unknown';
 
-module.exports = { makeSession, readSession, setCookie, clearCookie, newToken, newId, hash, normEmail, validEmail, rateLimited, ip, COOKIE };
+export { makeSession, readSession, setCookie, clearCookie, newToken, newId, hash, normEmail, validEmail, rateLimited, ip, COOKIE };

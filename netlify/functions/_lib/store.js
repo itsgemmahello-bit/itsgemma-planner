@@ -1,3 +1,4 @@
+import { getStore } from '@netlify/blobs';
 // Where everything is saved: Netlify Blobs, a simple key/value store that comes with every Netlify site.
 //   users/<id>        { id, name, email, created, lastSeen, news, tokenHash }
 //   email/<sha256>    { id }            find a person by email
@@ -17,10 +18,8 @@ function useMemoryStore() {
   return memory;
 }
 
-function open(event) {
+function open() {
   if (memory) return memory;
-  const { getStore, connectLambda } = require('@netlify/blobs');
-  if (event && event.blobs) connectLambda(event);
   const s = getStore({ name: 'christmas', consistency: 'strong' });
   return {
     get: (k) => s.get(k, { type: 'json' }),
@@ -29,4 +28,4 @@ function open(event) {
   };
 }
 
-module.exports = { open, useMemoryStore };
+export { open, useMemoryStore };

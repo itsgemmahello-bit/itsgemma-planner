@@ -50,4 +50,4 @@ async function forget({ email }) {
 
 const plannerLink = (token) => `${(process.env.SITE_URL || process.env.URL || '').replace(/\/$/, '')}/?t=${token}`;
 
-module.exports = { sendLink, subscribe, forget, plannerLink };
+export { sendLink, subscribe, forget, plannerLink };

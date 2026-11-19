@@ -1,4 +1,4 @@
-const A = require('./auth');
+import * as A from './auth.js';
 
 const LIMITS = { people: 60, gifts: 600, name: 40, item: 120, link: 500, price: 100000 };
 const str = (v, max) => String(v == null ? '' : v).replace(/[\u0000-\u001f\u007f]/g, ' ').trim().slice(0, max);
@@ -31,4 +31,4 @@ function clean(input) {
   return { people, gifts };
 }
 
-module.exports = { clean, empty, LIMITS };
+export { clean, empty, LIMITS };

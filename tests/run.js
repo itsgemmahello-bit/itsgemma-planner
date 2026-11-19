@@ -2,15 +2,16 @@
 // their own planner; forged cookies and old links get nothing; saving cleans what it is sent; "send my link"
 // says the same thing whether or not the email exists; deleting really deletes.
 // Runs against a memory store and a fake Klaviyo, so it needs no network and no keys.
-const test = require('node:test');
-const assert = require('node:assert');
+import test from 'node:test';
+import assert from 'node:assert';
 
 process.env.SESSION_SECRET = 'test-secret-that-is-long-enough-for-hmac-1234';
 process.env.KLAVIYO_PRIVATE_KEY = 'pk_test';
 process.env.KLAVIYO_NEWS_LIST_ID = 'LIST1';
 process.env.SITE_URL = 'https://planner.example';
 
-const S0 = require('../netlify/functions/_lib/store');
+const S0 = await import('../netlify/functions/_lib/store.js');
+const AUTH = await import('../netlify/functions/_lib/auth.js');
 const mem = S0.useMemoryStore();
 const sent = [];
 global.fetch = async (url, opts = {}) => {
@@ -19,7 +20,9 @@ global.fetch = async (url, opts = {}) => {
 };
 const links = () => sent.filter((s) => s.url.includes('/api/events/')).map((s) => s.body.data.attributes.properties.link);
 
-const fn = (n) => require(`../netlify/functions/${n}`);
+const mods = {};
+for (const n of ['signup', 'session', 'me', 'save', 'resend-link', 'logout', 'delete-me']) mods[n] = await import(`../netlify/functions/${n}.js`);
+const fn = (n) => mods[n];
 let ipN = 0;
 const call = (name, { method = 'POST', body, cookie = '' } = {}) =>
   fn(name).handler({ httpMethod: method, headers: { cookie, 'x-nf-client-connection-ip': `10.0.0.${++ipN % 250}` }, body: body ? JSON.stringify(body) : '' });
@@ -115,7 +118,7 @@ test('deleting removes everything and the cookie stops working', async () => {
   assert.equal((await call('me', { method: 'GET', cookie: ben })).statusCode, 401);
   assert.ok(sent.some((s) => s.url.includes('data-privacy-deletion-jobs')), 'Klaviyo asked to delete');
   const left = [...mem._map.keys()];
-  assert.ok(!left.some((k) => k.includes(require('../netlify/functions/_lib/auth').hash('ben@example.com'))), 'email record gone');
+  assert.ok(!left.some((k) => k.includes(AUTH.hash('ben@example.com'))), 'email record gone');
   // Ben can sign up fresh afterwards.
   assert.equal(data(await call('signup', { body: { name: 'Ben', email: 'ben@example.com' } })).status, 'in');
 });

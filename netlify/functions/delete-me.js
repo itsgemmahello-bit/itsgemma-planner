@@ -1,12 +1,12 @@
-const A = require('./_lib/auth');
-const S0 = require('./_lib/store');
-const U = require('./_lib/users');
-const K = require('./_lib/klaviyo');
-const { json, parseBody } = require('./_lib/http');
+import * as A from './_lib/auth.js';
+import * as S0 from './_lib/store.js';
+import * as U from './_lib/users.js';
+import * as K from './_lib/klaviyo.js';
+import { json, parseBody, safe, v2 } from './_lib/http.js';
 
 // POST { confirm: "DELETE" } -> deletes the signed-in person's planner, account, link and email record,
 // asks Klaviyo to delete their profile, and signs the device out. Cannot be undone.
-exports.handler = async (event) => {
+const handler = safe(async (event) => {
   if (event.httpMethod !== 'POST') return json(405, { error: 'POST only' });
   const S = S0.open(event);
   const user = await U.current(S, event);
@@ -18,4 +18,8 @@ exports.handler = async (event) => {
   await S.del(`users/${user.id}`);
   await K.forget({ email: user.email }).catch(() => false);
   return json(200, { ok: true }, { 'Set-Cookie': A.clearCookie() });
-};
+});
+
+export { handler };
+export default v2(handler);
+export const config = { path: '/api/delete-me' };

@@ -1,5 +1,5 @@
-const A = require('./auth');
-const K = require('./klaviyo');
+import * as A from './auth.js';
+import * as K from './klaviyo.js';
 
 const findByEmail = async (S, email) => {
   const hit = await S.get(`email/${A.hash(email)}`);
@@ -23,4 +23,4 @@ async function newLink(S, user) {
   return K.plannerLink(token);
 }
 
-module.exports = { findByEmail, current, newLink };
+export { findByEmail, current, newLink };

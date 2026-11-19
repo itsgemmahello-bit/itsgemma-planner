@@ -346,7 +346,7 @@ footer.foot{display:flex;justify-content:space-between;align-items:center;gap:10
       $("su-go").disabled = false; $("su-go").textContent = "Start my planner";
       if (r.status === 200 && r.data.status === "in") return load();
       if (r.status === 200) { m.textContent = r.data.message; return; }
-      m.className = "msg err"; m.textContent = r.data.error || "Something went wrong. Try again in a minute.";
+      m.className = "msg err"; m.textContent = (r.data.error || "Something went wrong. Try again in a minute.") + (r.data.detail ? " [" + r.data.detail + "]" : "");
     }).catch(function () { $("su-go").disabled = false; $("su-go").textContent = "Start my planner"; m.className = "msg err"; m.textContent = "Couldn't connect. Check your internet and try again."; });
   });
   $("resend").addEventListener("submit", function (e) {

@@ -1,13 +1,13 @@
-const S0 = require('./_lib/store');
-const U = require('./_lib/users');
-const P = require('./_lib/planner');
-const A = require('./_lib/auth');
-const { json, parseBody } = require('./_lib/http');
+import * as S0 from './_lib/store.js';
+import * as U from './_lib/users.js';
+import * as P from './_lib/planner.js';
+import * as A from './_lib/auth.js';
+import { json, parseBody, safe, v2 } from './_lib/http.js';
 
 // POST { planner, base } -> saves the signed-in person's planner.
 // base = the updatedAt the page last loaded. If another device saved since, reply 409 with the newer copy
 // so the page can show it instead of overwriting it.
-exports.handler = async (event) => {
+const handler = safe(async (event) => {
   if (event.httpMethod !== 'POST') return json(405, { error: 'POST only' });
   const S = S0.open(event);
   const user = await U.current(S, event);
@@ -19,4 +19,8 @@ exports.handler = async (event) => {
   const next = { ...P.clean(d.planner), updatedAt: new Date().toISOString() };
   await S.set(`planner/${user.id}`, next);
   return json(200, { ok: true, updatedAt: next.updatedAt });
-};
+});
+
+export { handler };
+export default v2(handler);
+export const config = { path: '/api/save' };

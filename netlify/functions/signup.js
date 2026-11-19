@@ -1,15 +1,15 @@
-const A = require('./_lib/auth');
-const S0 = require('./_lib/store');
-const U = require('./_lib/users');
-const K = require('./_lib/klaviyo');
-const P = require('./_lib/planner');
-const { json, parseBody } = require('./_lib/http');
+import * as A from './_lib/auth.js';
+import * as S0 from './_lib/store.js';
+import * as U from './_lib/users.js';
+import * as K from './_lib/klaviyo.js';
+import * as P from './_lib/planner.js';
+import { json, parseBody, safe, v2 } from './_lib/http.js';
 
 const CHECK = 'You already have a planner with that email. Your personal link is on its way to your inbox (check spam too).';
 
 // POST { name, email, news, website } -> new email: create the planner and sign straight in, then email the link
 // for other devices. Known email: never sign in (that would open someone else's planner), just email their link.
-exports.handler = async (event) => {
+const handler = safe(async (event) => {
   if (event.httpMethod !== 'POST') return json(405, { error: 'POST only' });
   if (A.rateLimited('signup:' + A.ip(event), 8)) return json(429, { error: 'Too many tries. Give it a few minutes.' });
   const d = parseBody(event);
@@ -35,4 +35,8 @@ exports.handler = async (event) => {
   await K.sendLink({ email, name, link, isNew: true });
   if (user.news) await K.subscribe({ email });
   return json(200, { ok: true, status: 'in' }, { 'Set-Cookie': A.setCookie(user.id) });
-};
+});
+
+export { handler };
+export default v2(handler);
+export const config = { path: '/api/signup' };

@@ -1,10 +1,10 @@
-const A = require('./_lib/auth');
-const S0 = require('./_lib/store');
-const { json, parseBody } = require('./_lib/http');
+import * as A from './_lib/auth.js';
+import * as S0 from './_lib/store.js';
+import { json, parseBody, safe, v2 } from './_lib/http.js';
 
 // POST { token } -> if it is someone's current personal link, sign this device in for a year.
 // The page strips the token from the address bar straight after.
-exports.handler = async (event) => {
+const handler = safe(async (event) => {
   if (event.httpMethod !== 'POST') return json(405, { error: 'POST only' });
   if (A.rateLimited('session:' + A.ip(event), 15)) return json(429, { error: 'Too many tries. Give it a few minutes.' });
   const token = String(parseBody(event).token || '').trim();
@@ -16,4 +16,8 @@ exports.handler = async (event) => {
   user.lastSeen = new Date().toISOString();
   await S.set(`users/${user.id}`, user);
   return json(200, { ok: true }, { 'Set-Cookie': A.setCookie(user.id) });
-};
+});
+
+export { handler };
+export default v2(handler);
+export const config = { path: '/api/session' };

@@ -10,5 +10,8 @@
   "dependencies": {
     "@netlify/blobs": "8.1.0"
   },
-  "engines": { "node": ">=20" }
+  "engines": {
+    "node": ">=20"
+  },
+  "type": "module"
 }
