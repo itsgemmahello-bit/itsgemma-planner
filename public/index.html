@@ -1,0 +1,611 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Christmas Planner | @itsgemma__</title>
+<meta name="description" content="A free Christmas present planner: everyone you're buying for, a budget each, and a tick when it's ordered and when it arrives.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Caveat+Brush&family=Cormorant+Garamond:wght@700&family=Nunito:wght@400;700;800&display=swap">
+<style>
+/* Layout: Gem's Christmas page. Dark green sidebar listing every tab (only Christmas open, the rest "Coming soon"),
+   candy-stripe wrapping-paper bars, one calm column: totals first, then people, then each person's presents. */
+:root{
+  --bg:#fbe4ea; --surface:#fff8f5; --fg:#4a0d18; --muted:#8e4b58; --line:#f0c2cd;
+  --indigo:#6d0f26; --pink:#8a1230; --onaccent:#ffffff; --tint:#fbe9ee;
+  --stripeA:#d3203a; --stripeB:#f4a6bc; --stripeC:#1f5a3a; --stripeD:#6d0f26;
+  --good:#2e5e3e; --goodbg:#e3efe6; --bad:#7a0a16; --badbg:#f7d0d6;
+  --side:#1f4a32; --sidefg:#fffaf3; --sideacc:#f4a6bc;
+  --shadow:rgba(158,19,37,.12);
+  --display:'Cormorant Garamond',Georgia,serif; --body:'Nunito','Helvetica Neue',Arial,sans-serif; --hand:'Caveat Brush','Comic Sans MS',cursive;
+  --stripes:linear-gradient(90deg,var(--stripeD) 0 14.286%,var(--stripeA) 14.286% 28.571%,var(--stripeB) 28.571% 42.857%,var(--stripeD) 42.857% 57.143%,var(--stripeC) 57.143% 71.429%,var(--stripeB) 71.429% 85.714%,var(--stripeD) 85.714% 100%);
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#22080d; --surface:#33101a; --fg:#ffeef2; --muted:#e0a7b4; --line:#57202d;
+  --indigo:#ffb3c4; --pink:#ff5a6e; --onaccent:#2a0508; --tint:#431620;
+  --stripeA:#9e1325; --stripeB:#c45a78; --stripeC:#2e6b47; --stripeD:#5e1022;
+  --good:#8fd6a3; --goodbg:#1f3a28; --bad:#ffc2cb; --badbg:#5a1a22;
+  --side:#163826; --sidefg:#fffaf3; --sideacc:#f4a6bc;
+  --shadow:rgba(0,0,0,.4); color-scheme:dark}}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{overflow-x:clip;max-width:100%}
+html{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;font-variant-numeric:tabular-nums}
+a{color:var(--indigo)}
+button:focus-visible,input:focus-visible,a:focus-visible{outline:3px solid var(--pink);outline-offset:2px}
+h1{font-family:var(--display);font-weight:700;font-size:clamp(2.1rem,5.5vw,3rem);line-height:1.05;margin:2px 0 0;color:var(--indigo);text-wrap:balance}
+h2{font-family:var(--display);font-weight:700;font-size:1.6rem;line-height:1.1;margin:0;color:var(--indigo);text-wrap:balance}
+.kicker{font-size:12px;font-weight:800;letter-spacing:.12em;text-transform:uppercase;color:var(--pink)}
+.sub{color:var(--muted);margin:0;max-width:62ch}
+.note{font-size:13px;color:var(--muted);margin:0}
+.msg{font-size:14px;font-weight:700;margin:0;color:var(--good)}
+.msg.err{color:var(--bad)}
+.btn{appearance:none;border:1px solid var(--line);background:var(--surface);color:var(--fg);font:inherit;font-size:15px;font-weight:800;padding:10px 18px;border-radius:999px;cursor:pointer;white-space:nowrap}
+.btn.primary{background:var(--pink);border-color:var(--pink);color:var(--onaccent)}
+.btn.big{font-size:17px;padding:13px 24px}
+.btn.sm{font-size:13px;padding:6px 12px}
+.btn.danger{border-color:var(--bad);color:var(--bad);background:transparent}
+.linkbtn{appearance:none;background:none;border:0;color:var(--indigo);font:inherit;font-weight:800;font-size:14px;cursor:pointer;padding:4px 2px;text-decoration:underline}
+label.f{display:grid;gap:4px;font-size:13px;font-weight:800;color:var(--muted);min-width:0}
+input[type=text],input[type=email],input[type=number],input[type=url]{font:inherit;font-size:16px;color:var(--fg);background:var(--bg);border:1px solid var(--line);border-radius:10px;padding:10px 12px;width:100%;min-width:0}
+.card{background:var(--stripes) top/100% 6px no-repeat,var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px 18px 18px;box-shadow:0 4px 18px var(--shadow);min-width:0;display:grid;gap:14px}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{appearance:none;border:1px solid var(--line);background:var(--tint);color:var(--fg);font:inherit;font-size:14px;font-weight:700;padding:7px 14px;border-radius:999px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--pink);color:var(--onaccent);border-color:var(--pink)}
+.chip.add{border-style:dashed;background:transparent}
+
+/* Loading */
+#loading{min-height:60vh;display:grid;place-items:center;color:var(--muted);font-weight:700}
+
+/* Sign-up page */
+#gate{background:var(--stripes) top/100% 10px no-repeat,var(--bg);min-height:100vh;padding-block:44px 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.gate{max-width:1000px;margin:0 auto;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:36px;align-items:start}
+@media (max-width:820px){.gate{grid-template-columns:minmax(0,1fr);gap:24px}}
+.gate .sig{font-family:var(--hand);font-size:30px;color:var(--pink);line-height:1}
+.gate h1{font-size:clamp(2.4rem,6.5vw,3.6rem)}
+.gate .points{list-style:none;padding:0;margin:18px 0 0;display:grid;gap:10px}
+.gate .points li{display:grid;grid-template-columns:28px minmax(0,1fr);gap:8px;align-items:start}
+.gate .points li::before{content:"";width:18px;height:18px;margin-top:4px;border-radius:5px;background:var(--stripes);box-shadow:0 0 0 2px var(--surface) inset}
+.mock{margin-top:22px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:14px 16px;display:grid;gap:8px;max-width:440px;box-shadow:0 4px 18px var(--shadow)}
+.mock .mh{display:flex;justify-content:space-between;font-weight:800}
+.mock .mh span{color:var(--muted);font-weight:700;font-size:14px}
+.mock .mg{display:flex;justify-content:space-between;gap:10px;font-size:14px;border-top:1px solid var(--line);padding-top:8px}
+.mock .mg em{font-style:normal;color:var(--good);font-weight:800;font-size:12px}
+.mock .eg{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.check{display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;align-items:start;font-size:14px;color:var(--fg)}
+.check input{width:20px;height:20px;margin:2px 0 0;accent-color:var(--pink)}
+.hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+
+/* Planner shell */
+.gshell{display:grid;grid-template-columns:240px minmax(0,1fr);min-height:100vh;background:linear-gradient(90deg,var(--side) 240px,transparent 240px)}
+.gside{position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--side);color:var(--sidefg);padding:26px 18px 18px;display:flex;flex-direction:column;gap:20px;z-index:6}
+.gbrand .sig{font-family:var(--hand);font-size:30px;line-height:1;color:var(--sideacc);display:block}
+.gbrand .nm{font-family:var(--hand);font-size:34px;line-height:1;color:var(--sideacc);margin:2px 0 0}
+.gbrand .by{font-size:12px;font-weight:700;opacity:.75;margin-top:6px}
+.gnav p{margin:0 0 6px;font-weight:800;font-size:11px;letter-spacing:.2em;color:rgba(255,250,243,.62)}
+.gnav .list{display:flex;flex-direction:column;gap:2px}
+.gnav a,.gnav button{display:flex;align-items:center;justify-content:space-between;gap:8px;width:100%;padding:9px 14px;border-radius:12px;color:var(--sidefg);text-decoration:none;font:inherit;font-weight:700;font-size:15px;background:none;border:0;text-align:left;cursor:pointer}
+.gnav a.on{background:var(--sideacc);color:var(--side)}
+.gnav button{opacity:.85}
+.gnav button:hover{background:rgba(255,250,243,.08)}
+.soon{font-size:10.5px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border:1px solid rgba(255,250,243,.4);border-radius:999px;padding:1px 8px;white-space:nowrap}
+.soonnote{font-size:13px;line-height:1.4;background:rgba(255,250,243,.1);border-radius:12px;padding:10px 12px;margin:0}
+.gmain{min-width:0;background:var(--stripes) top/100% 8px no-repeat,var(--bg);padding-block:0 64px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:860px;margin:0 auto;display:grid;gap:18px}
+@media (max-width:820px){
+  .gshell{display:block;background:none}
+  .gside{position:static;height:auto;padding:14px max(16px,env(safe-area-inset-left,0px));gap:10px}
+  .gbrand{display:flex;align-items:baseline;gap:8px;flex-wrap:wrap}.gbrand .sig,.gbrand .nm{font-size:26px}.gbrand .by{margin:0}
+  .gnav p{display:none}
+  .gnav .list{flex-direction:row;overflow-x:auto;scrollbar-width:none;gap:6px}.gnav .list::-webkit-scrollbar{display:none}
+  .gnav a,.gnav button{width:auto;white-space:nowrap;padding:6px 12px;font-size:14px}
+}
+header.top{padding:26px 0 0;display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+.days{font-family:var(--display);font-size:1.5rem;color:var(--pink);font-weight:700;white-space:nowrap}
+
+/* Totals */
+.hero{background:var(--stripes);border-radius:18px;padding:16px;box-shadow:0 10px 30px var(--shadow)}
+.tiles{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.tiles .tile{padding:12px 10px}
+.tiles .tile .l{font-size:11.5px;line-height:1.3}
+.tiles .tile .v{font-size:clamp(1.4rem,2.4vw,2rem)}
+@media (max-width:820px) and (min-width:561px){.tiles{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:560px){.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.tiles .tile .v{font-size:2rem}}
+.tile{background:var(--surface);border-radius:12px;padding:12px 14px;min-width:0}
+.tile .v{font-family:var(--display);font-weight:700;font-size:2rem;line-height:1}
+.tile .l{font-size:12px;color:var(--muted);margin-top:4px;font-weight:700}
+.tile.over .v{color:var(--bad)}
+
+/* People */
+.head{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+.addrow{display:grid;grid-template-columns:minmax(0,1fr) 120px auto;gap:10px;align-items:end}
+@media (max-width:560px){.addrow{grid-template-columns:minmax(0,1fr) 100px}.addrow .btn{grid-column:1/-1}
+  .plist .addrow{grid-template-columns:minmax(0,1fr) 84px auto}.plist .addrow .btn{grid-column:auto;padding:10px 14px}}
+.panel{display:grid;gap:12px;background:var(--tint);border-radius:12px;padding:14px}
+.plist{display:grid;gap:8px}
+.plist:empty{display:none}
+.plist .addrow{align-items:center}
+.ro{font-size:16px;font-weight:700;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:var(--surface);min-width:0;overflow-wrap:anywhere}
+.ro.money{font-weight:700;color:var(--muted)}
+.prow-acts{display:flex;gap:10px;align-items:center;flex-wrap:wrap;grid-column:1/-1}
+
+/* Quick add */
+.giftrow{display:grid;grid-template-columns:minmax(0,1fr) 110px auto;gap:10px;align-items:end}
+@media (max-width:560px){.giftrow{grid-template-columns:minmax(0,1fr) 96px}.giftrow .btn{grid-column:1/-1}}
+
+/* Each person */
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.filters .lab{font-size:13px;font-weight:800;color:var(--muted)}
+.person-h{display:flex;justify-content:space-between;gap:10px;align-items:baseline;flex-wrap:wrap}
+.person-h h3{font-family:var(--display);font-size:1.6rem;margin:0;color:var(--indigo);overflow-wrap:anywhere}
+.person-h .sum{font-size:14px;color:var(--muted);font-weight:700}
+.person-h .sum.over{color:var(--bad)}
+.meter{height:10px;background:var(--tint);border-radius:999px;overflow:hidden}
+.meter i{display:block;height:100%;background:var(--good);border-radius:999px}
+.meter.over i{background:var(--bad)}
+.gifts{display:grid}
+.gift{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
+.gift .it{font-weight:800;overflow-wrap:anywhere}
+.gift .it a{text-decoration:none;border-bottom:1px dashed currentColor}
+.gift .pr{font-size:14px;color:var(--muted);font-weight:700}
+.gift .ticks{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.tick{display:inline-flex;gap:6px;align-items:center;font-size:14px;font-weight:700;cursor:pointer;white-space:nowrap}
+.tick input{width:20px;height:20px;margin:0;accent-color:var(--good)}
+.gift.done .it{text-decoration:line-through;text-decoration-color:var(--muted)}
+.x{appearance:none;border:0;background:none;color:var(--muted);font-size:20px;line-height:1;cursor:pointer;padding:2px 6px;border-radius:8px}
+.x:hover{color:var(--bad)}
+.acts{display:flex;gap:6px;flex-wrap:wrap}
+.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;background:var(--badbg);border-radius:10px;padding:10px 12px;font-size:14px;font-weight:700}
+.empty{color:var(--muted);font-size:15px;margin:0}
+
+footer.foot{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;font-size:14px;color:var(--muted);border-top:1px solid var(--line);padding-top:14px}
+.status{font-weight:800}
+.status.err{color:var(--bad)}
+@media (prefers-reduced-motion:reduce){*{scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+
+<div id="loading">Opening your planner…</div>
+
+<!-- Sign-up page: what anyone sees before they have a planner -->
+<main id="gate" hidden>
+  <div class="gate">
+    <section>
+      <span class="sig">@itsgemma__</span>
+      <span class="kicker">Free Christmas planner</span>
+      <h1>Every present, for every person, on one page.</h1>
+      <p class="sub" style="margin-top:12px">Add everyone you're buying for, give each one a budget, and tick presents off when they're ordered and when they arrive. It saves as you go and works on your phone and your laptop.</p>
+      <ul class="points">
+        <li>See exactly what you've spent and what's left, person by person</li>
+        <li>Paste the link to a present so you can find it again</li>
+        <li>Ordered and arrived ticks, so nothing goes missing in the post</li>
+      </ul>
+      <div class="mock" aria-hidden="true">
+        <span class="eg">Example</span>
+        <div class="mh">Nan <span>£34 of £40</span></div>
+        <div class="mg"><span>Slippers, size 6</span><em>Arrived</em></div>
+        <div class="mg"><span>Photo calendar</span><em>Ordered</em></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Start your planner</h2>
+      <form id="signup" class="card" style="box-shadow:none;border:0;padding:0;background:none" novalidate>
+        <label class="f" for="su-name">First name<input id="su-name" name="name" type="text" autocomplete="given-name" maxlength="40" required></label>
+        <label class="f" for="su-email">Email<input id="su-email" name="email" type="email" autocomplete="email" maxlength="200" required></label>
+        <label class="check" for="su-news"><input id="su-news" name="news" type="checkbox"><span>Yes, send me Gem's emails too: the little things that take the mental load off. Unsubscribe any time.</span></label>
+        <div class="hp" aria-hidden="true"><label for="su-website">Leave this empty</label><input id="su-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
+        <button class="btn primary big" id="su-go" type="submit">Start my planner</button>
+        <p class="note">We'll email you your own link too, so you can open your planner on any device. <a href="/privacy.html">How your details are used</a>.</p>
+        <p class="msg" id="su-msg" role="status" aria-live="polite"></p>
+      </form>
+
+      <form id="resend" style="display:grid;gap:10px;border-top:1px solid var(--line);padding-top:14px" novalidate>
+        <h3 style="margin:0;font-size:16px">Already started one?</h3>
+        <p class="msg err" id="link-msg" role="alert"></p>
+        <label class="f" for="rs-email">Your email<input id="rs-email" name="email" type="email" autocomplete="email" maxlength="200" required></label>
+        <button class="btn" id="rs-go" type="submit">Email me my link</button>
+        <p class="msg" id="rs-msg" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+  </div>
+</main>
+
+<!-- The planner -->
+<div id="app" class="gshell" hidden>
+  <aside class="gside">
+    <div class="gbrand">
+      <span class="sig">Your</span><p class="nm">Christmas</p>
+      <p class="by">by @itsgemma__</p>
+    </div>
+    <nav class="gnav" aria-label="Your pages">
+      <p>YOUR PAGES</p>
+      <div class="list">
+        <a class="on" aria-current="page" href="/">Christmas</a>
+        <button type="button" data-soon="Calendar">Calendar <span class="soon">Coming soon</span></button>
+        <button type="button" data-soon="Lists">Lists <span class="soon">Coming soon</span></button>
+        <button type="button" data-soon="Meals">Meals <span class="soon">Coming soon</span></button>
+        <button type="button" data-soon="Wellness">Wellness <span class="soon">Coming soon</span></button>
+        <button type="button" data-soon="Money">Money <span class="soon">Coming soon</span></button>
+      </div>
+    </nav>
+    <p class="soonnote" id="soonnote" hidden role="status"></p>
+  </aside>
+
+  <div class="gmain">
+    <div class="wrap">
+      <header class="top">
+        <div><span class="kicker" id="hi">Hi</span><h1>Christmas presents</h1></div>
+        <span class="days" id="days"></span>
+      </header>
+
+      <section class="hero" aria-label="Totals">
+        <div class="tiles">
+          <div class="tile"><div class="v" id="t-budget">£0</div><div class="l">Total budget</div></div>
+          <div class="tile"><div class="v" id="t-people">0</div><div class="l" id="t-people-l">People to buy for</div></div>
+          <div class="tile"><div class="v" id="t-planned">£0</div><div class="l">On presents so far</div></div>
+          <div class="tile" id="t-left-tile"><div class="v" id="t-left">£0</div><div class="l" id="t-left-l">Left to spend</div></div>
+          <div class="tile"><div class="v" id="t-ordered">0</div><div class="l" id="t-ordered-l">Ordered</div></div>
+          <div class="tile"><div class="v" id="t-arrived">0</div><div class="l" id="t-arrived-l">Arrived</div></div>
+        </div>
+      </section>
+
+      <section class="card" aria-labelledby="ppl-h">
+        <h2 id="ppl-h">Who you're buying for</h2>
+        <p class="note">Type their name and budget, then tap Add. Do the same for everyone on your list.</p>
+        <div class="addrow">
+          <label class="f" for="ap-name">Name<input id="ap-name" type="text" maxlength="40" placeholder="e.g. Mum" autocomplete="off"></label>
+          <label class="f" for="ap-budget">Budget (£)<input id="ap-budget" type="number" inputmode="decimal" min="0" step="1" placeholder="e.g. 50"></label>
+          <button class="btn primary" id="ap-go" type="button">Add</button>
+        </div>
+        <p class="msg err" id="ap-msg" role="status"></p>
+        <div id="plist" class="plist" aria-label="Everyone on your list"></div>
+      </section>
+
+      <section class="card" aria-labelledby="qa-h" id="quick">
+        <h2 id="qa-h">Add a present</h2>
+        <p class="empty" id="qa-empty">Add someone above first, then their presents go here.</p>
+        <div id="qa-body" style="display:grid;gap:12px">
+          <div style="display:grid;gap:6px"><span class="f" style="font-size:13px;font-weight:800;color:var(--muted)">Who's it for?</span><div class="chips" id="qa-who" role="group" aria-label="Who's it for?"></div></div>
+          <form id="qa-form" class="giftrow" novalidate>
+            <label class="f" for="qa-item">Present<input id="qa-item" type="text" maxlength="120" placeholder="e.g. Lego Star Wars set" autocomplete="off"></label>
+            <label class="f" for="qa-price">Price (£)<input id="qa-price" type="number" inputmode="decimal" min="0" step="0.01" placeholder="0"></label>
+            <button class="btn primary" type="submit">Add</button>
+            <label class="f" for="qa-link" id="qa-link-wrap" hidden style="grid-column:1/-1">Link (optional)<input id="qa-link" type="url" inputmode="url" maxlength="500" placeholder="Paste the shop link" autocomplete="off"></label>
+          </form>
+          <div class="acts"><button class="linkbtn" id="qa-link-toggle" type="button">+ Add a link (optional)</button></div>
+          <p class="note">Press Enter to add it and carry straight on with the next one.</p>
+          <p class="msg" id="qa-msg" role="status" aria-live="polite"></p>
+        </div>
+      </section>
+
+      <div class="filters" role="group" aria-label="Show">
+        <span class="lab">Show:</span>
+        <button class="chip" type="button" data-f="all" aria-pressed="true">Everything</button>
+        <button class="chip" type="button" data-f="toorder" aria-pressed="false">Still to order</button>
+        <button class="chip" type="button" data-f="waiting" aria-pressed="false">Waiting to arrive</button>
+        <button class="chip" type="button" data-f="done" aria-pressed="false">Arrived</button>
+      </div>
+      <div id="people" style="display:grid;gap:14px"></div>
+
+      <footer class="foot">
+        <span><span class="status" id="status">All saved</span> · <span id="who"></span></span>
+        <span class="acts" id="foot-acts">
+          <button class="linkbtn" id="signout" type="button">Sign out</button>
+          <button class="linkbtn" id="del-open" type="button" style="color:var(--bad)">Delete my planner</button>
+          <a href="/privacy.html" class="linkbtn">Privacy</a>
+        </span>
+      </footer>
+      <div class="confirm" id="del-confirm" hidden>
+        <span>Delete your planner and your details? This can't be undone.</span>
+        <button class="btn sm danger" id="del-yes" type="button">Yes, delete everything</button>
+        <button class="btn sm" id="del-no" type="button">Keep it</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+  var $ = function (id) { return document.getElementById(id); };
+  var GBP = new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP" });
+  var money = function (n) { var s = GBP.format(n || 0); return s.slice(-3) === ".00" ? s.slice(0, -3) : s; };
+  var state = { people: [], gifts: [] };
+  var base = null, me = null, filter = "all", whoFor = null;
+  var saveTimer = null, saving = false, pending = false;
+  var openEdit = null, confirmRemove = null;
+
+  function el(tag, cls, text) { var e = document.createElement(tag); if (cls) e.className = cls; if (text != null) e.textContent = text; return e; }
+  function newId() { var a = new Uint8Array(9); crypto.getRandomValues(a); return Array.from(a, function (b) { return ("0" + b.toString(16)).slice(-2); }).join(""); }
+  function num(v) { var n = parseFloat(String(v).replace(/[^0-9.]/g, "")); return isFinite(n) && n >= 0 ? Math.round(n * 100) / 100 : 0; }
+  function api(path, opts) {
+    opts = opts || {};
+    return fetch("/api/" + path, { method: opts.method || "GET", headers: { "content-type": "application/json" }, credentials: "same-origin", body: opts.body ? JSON.stringify(opts.body) : undefined })
+      .then(function (r) { return r.json().catch(function () { return {}; }).then(function (j) { return { status: r.status, data: j }; }); });
+  }
+  function backup() { try { if (me) localStorage.setItem("xmas-backup", JSON.stringify(state)); } catch (e) {} }
+
+  /* ---------- Sign-up page ---------- */
+  function showGate(err) {
+    $("loading").hidden = true; $("app").hidden = true; $("gate").hidden = false;
+    if (err) $("link-msg").textContent = err;
+  }
+  $("signup").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var m = $("su-msg"); m.className = "msg"; m.textContent = "";
+    var name = $("su-name").value.trim(), email = $("su-email").value.trim();
+    if (!name) { m.className = "msg err"; m.textContent = "Add your first name."; $("su-name").focus(); return; }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) { m.className = "msg err"; m.textContent = "That email doesn't look right. Check it and try again."; $("su-email").focus(); return; }
+    $("su-go").disabled = true; $("su-go").textContent = "Starting…";
+    api("signup", { method: "POST", body: { name: name, email: email, news: $("su-news").checked, website: $("su-website").value } }).then(function (r) {
+      $("su-go").disabled = false; $("su-go").textContent = "Start my planner";
+      if (r.status === 200 && r.data.status === "in") return load();
+      if (r.status === 200) { m.textContent = r.data.message; return; }
+      m.className = "msg err"; m.textContent = r.data.error || "Something went wrong. Try again in a minute.";
+    }).catch(function () { $("su-go").disabled = false; $("su-go").textContent = "Start my planner"; m.className = "msg err"; m.textContent = "Couldn't connect. Check your internet and try again."; });
+  });
+  $("resend").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var m = $("rs-msg"); m.className = "msg"; m.textContent = "";
+    $("rs-go").disabled = true;
+    api("resend-link", { method: "POST", body: { email: $("rs-email").value.trim() } }).then(function (r) {
+      $("rs-go").disabled = false; m.textContent = r.data.message || "If that email has a planner, a fresh link is on its way.";
+    }).catch(function () { $("rs-go").disabled = false; m.className = "msg err"; m.textContent = "Couldn't connect. Check your internet and try again."; });
+  });
+
+  /* ---------- Load ---------- */
+  function load() {
+    return api("me").then(function (r) {
+      if (r.status !== 200) return showGate();
+      me = r.data; state = { people: r.data.planner.people || [], gifts: r.data.planner.gifts || [] }; base = r.data.planner.updatedAt || null;
+      if (!whoFor && state.people.length) whoFor = state.people[0].id;
+      $("loading").hidden = true; $("gate").hidden = true; $("app").hidden = false;
+      $("hi").textContent = "Hi " + me.name;
+      $("who").textContent = "Signed in as " + me.email;
+      render();
+    }).catch(function () { showGate("Couldn't connect. Check your internet and refresh the page."); });
+  }
+  function start() {
+    var params = new URLSearchParams(location.search), t = params.get("t");
+    if (!t) return load();
+    history.replaceState(null, "", location.pathname);
+    api("session", { method: "POST", body: { token: t } }).then(function (r) {
+      if (r.status === 200) return load();
+      showGate(r.data.error || "That link didn't work. Ask for a fresh one below.");
+    }).catch(function () { showGate("Couldn't connect. Check your internet and refresh the page."); });
+  }
+
+  /* ---------- Saving ---------- */
+  function setStatus(text, bad) { var s = $("status"); s.textContent = text; s.className = "status" + (bad ? " err" : ""); }
+  function changed() { backup(); setStatus("Saving…"); clearTimeout(saveTimer); saveTimer = setTimeout(save, 700); render(); }
+  function save() {
+    if (saving) { pending = true; return; }
+    saving = true;
+    api("save", { method: "POST", body: { planner: state, base: base } }).then(function (r) {
+      saving = false;
+      if (r.status === 200) { base = r.data.updatedAt; setStatus("All saved"); }
+      else if (r.status === 409 && r.data.planner) { state = { people: r.data.planner.people || [], gifts: r.data.planner.gifts || [] }; base = r.data.planner.updatedAt; setStatus("Updated from your other device"); render(); }
+      else if (r.status === 401) { showGate("You've been signed out. Ask for your link below to get back in."); return; }
+      else { setStatus("Not saved yet, trying again…", true); setTimeout(save, 4000); }
+      if (pending) { pending = false; save(); }
+    }).catch(function () { saving = false; setStatus("Offline: not saved yet, trying again…", true); setTimeout(save, 5000); });
+  }
+
+  /* ---------- Sums ---------- */
+  function giftsFor(pid) { return state.gifts.filter(function (g) { return g.personId === pid; }); }
+  function spent(list) { return list.reduce(function (a, g) { return a + (g.price || 0); }, 0); }
+  function personById(id) { for (var i = 0; i < state.people.length; i++) if (state.people[i].id === id) return state.people[i]; return null; }
+
+  /* ---------- People ---------- */
+  function nameTaken(n, exceptId) { return state.people.some(function (p) { return p.id !== exceptId && p.name.toLowerCase() === n.toLowerCase(); }); }
+  $("ap-go").addEventListener("click", function () {
+    var m = $("ap-msg"); m.textContent = "";
+    var n = $("ap-name").value.trim().slice(0, 40);
+    if (!n) { m.textContent = "Type their name first."; $("ap-name").focus(); return; }
+    if (nameTaken(n)) { m.textContent = n + " is already on your list."; return; }
+    if (state.people.length >= 60) { m.textContent = "That's the most people one planner can hold."; return; }
+    var p = { id: newId(), name: n, budget: num($("ap-budget").value) };
+    state.people.push(p); whoFor = p.id;
+    $("ap-name").value = ""; $("ap-budget").value = ""; $("ap-name").focus();
+    changed();
+  });
+  $("ap-name").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); $("ap-budget").focus(); } });
+  $("ap-budget").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); $("ap-go").click(); } });
+
+  /* ---------- Presents ---------- */
+  $("qa-link-toggle").addEventListener("click", function () { $("qa-link-wrap").hidden = false; $("qa-link-toggle").hidden = true; $("qa-link").focus(); });
+  $("qa-form").addEventListener("submit", function (e) {
+    e.preventDefault();
+    var m = $("qa-msg"); m.className = "msg"; m.textContent = "";
+    var item = $("qa-item").value.trim().slice(0, 120);
+    if (!whoFor || !personById(whoFor)) { m.className = "msg err"; m.textContent = "Pick who it's for first."; return; }
+    if (!item) { m.className = "msg err"; m.textContent = "Type the present first."; $("qa-item").focus(); return; }
+    if (state.gifts.length >= 600) { m.className = "msg err"; m.textContent = "That's the most presents one planner can hold."; return; }
+    state.gifts.push({ id: newId(), personId: whoFor, item: item, price: num($("qa-price").value), link: $("qa-link").value.trim().slice(0, 500), ordered: false, received: false });
+    var who = personById(whoFor), used = spent(giftsFor(who.id)), line = "Added " + item + " for " + who.name + ".";
+    if (who.budget > 0) {
+      var diff = Math.round((who.budget - used) * 100) / 100;
+      line += diff > 0 ? " " + who.name + " is still " + money(diff) + " under budget." : diff < 0 ? " " + who.name + " is now " + money(-diff) + " over budget." : " " + who.name + " is now exactly on budget.";
+      m.className = diff < 0 ? "msg err" : "msg";
+    }
+    m.textContent = line;
+    $("qa-item").value = ""; $("qa-price").value = ""; $("qa-link").value = "";
+    $("qa-link-wrap").hidden = true; $("qa-link-toggle").hidden = false;
+    $("qa-item").focus();
+    changed();
+  });
+  $("qa-price").addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); $("qa-form").requestSubmit(); } });
+
+  /* ---------- Filters, coming soon, footer ---------- */
+  document.querySelectorAll(".filters .chip").forEach(function (b) {
+    b.addEventListener("click", function () {
+      filter = b.getAttribute("data-f");
+      document.querySelectorAll(".filters .chip").forEach(function (x) { x.setAttribute("aria-pressed", String(x === b)); });
+      renderPeople();
+    });
+  });
+  document.querySelectorAll("[data-soon]").forEach(function (b) {
+    b.addEventListener("click", function () {
+      var n = $("soonnote"); n.hidden = false;
+      n.textContent = b.getAttribute("data-soon") + " is on its way in the new year. You'll be the first to hear about it.";
+    });
+  });
+  $("signout").addEventListener("click", function () { api("logout", { method: "POST" }).then(function () { location.href = "/"; }); });
+  $("del-open").addEventListener("click", function () { $("del-confirm").hidden = false; $("del-yes").focus(); });
+  $("del-no").addEventListener("click", function () { $("del-confirm").hidden = true; });
+  $("del-yes").addEventListener("click", function () {
+    $("del-yes").disabled = true;
+    api("delete-me", { method: "POST", body: { confirm: "DELETE" } }).then(function (r) {
+      if (r.status === 200) { try { localStorage.removeItem("xmas-backup"); } catch (e) {} me = null; showGate(); $("link-msg").className = "msg"; $("link-msg").textContent = "Your planner and details have been deleted."; return; }
+      $("del-yes").disabled = false; setStatus("Couldn't delete just now. Try again.", true);
+    });
+  });
+
+  /* ---------- Render ---------- */
+  function render() { renderTotals(); renderPeopleList(); renderQuick(); renderPeople(); }
+
+  function renderTotals() {
+    var budget = state.people.reduce(function (a, p) { return a + (p.budget || 0); }, 0);
+    var planned = spent(state.gifts), left = budget - planned;
+    var n = state.gifts.length, o = state.gifts.filter(function (g) { return g.ordered; }).length, r = state.gifts.filter(function (g) { return g.received; }).length;
+    $("t-budget").textContent = money(budget);
+    $("t-people").textContent = state.people.length;
+    $("t-people-l").textContent = state.people.length === 1 ? "Person to buy for" : "People to buy for";
+    $("t-planned").textContent = money(planned);
+    $("t-left").textContent = money(Math.abs(left));
+    $("t-left-l").textContent = left < 0 ? "Over budget" : "Left to spend";
+    $("t-left-tile").className = "tile" + (left < 0 ? " over" : "");
+    $("t-ordered").textContent = o; $("t-ordered-l").textContent = "Ordered, of " + n;
+    $("t-arrived").textContent = r; $("t-arrived-l").textContent = "Arrived, of " + n;
+    var now = new Date(), xmas = new Date(now.getFullYear(), 11, 25);
+    if (now > new Date(now.getFullYear(), 11, 26)) xmas = new Date(now.getFullYear() + 1, 11, 25);
+    var d = Math.ceil((xmas - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 864e5);
+    $("days").textContent = d <= 0 ? "Merry Christmas" : d === 1 ? "1 sleep to go" : d + " days to go";
+  }
+
+  // Everyone added so far, one row each, laid out like the Add row. Edit opens that row for changes.
+  function renderPeopleList() {
+    var box = $("plist"); box.textContent = "";
+    state.people.forEach(function (p) {
+      var row = el("div", "addrow");
+      if (openEdit !== p.id) {
+        row.appendChild(el("div", "ro", p.name));
+        row.appendChild(el("div", "ro money", p.budget > 0 ? money(p.budget) : "No budget"));
+        var ed = el("button", "btn", "Edit"); ed.type = "button"; ed.setAttribute("aria-label", "Edit " + p.name);
+        ed.addEventListener("click", function () { openEdit = p.id; confirmRemove = null; renderPeopleList(); var f = $("ed-n-" + p.id); if (f) f.focus(); });
+        row.appendChild(ed);
+        box.appendChild(row);
+        return;
+      }
+      var inN = el("input"); inN.type = "text"; inN.maxLength = 40; inN.value = p.name; inN.id = "ed-n-" + p.id; inN.setAttribute("aria-label", "Name");
+      var inB = el("input"); inB.type = "number"; inB.min = "0"; inB.inputMode = "decimal"; inB.value = p.budget || ""; inB.id = "ed-b-" + p.id; inB.setAttribute("aria-label", "Budget (£)"); inB.placeholder = "Budget";
+      var sv = el("button", "btn primary", "Save"); sv.type = "button";
+      var msg = el("p", "msg err"); msg.setAttribute("role", "status");
+      sv.addEventListener("click", function () {
+        var n = inN.value.trim().slice(0, 40);
+        if (!n) { msg.textContent = "Type their name first."; inN.focus(); return; }
+        if (nameTaken(n, p.id)) { msg.textContent = n + " is already on your list."; return; }
+        p.name = n; p.budget = num(inB.value); openEdit = null; changed();
+      });
+      [inN, inB].forEach(function (i) { i.addEventListener("keydown", function (e) { if (e.key === "Enter") { e.preventDefault(); sv.click(); } }); });
+      row.appendChild(inN); row.appendChild(inB); row.appendChild(sv);
+      var acts = el("div", "prow-acts");
+      var cancel = el("button", "linkbtn", "Cancel"); cancel.type = "button";
+      cancel.addEventListener("click", function () { openEdit = null; confirmRemove = null; renderPeopleList(); });
+      var rm = el("button", "linkbtn", "Remove " + p.name); rm.type = "button"; rm.style.color = "var(--bad)";
+      rm.addEventListener("click", function () { confirmRemove = p.id; renderPeopleList(); });
+      acts.appendChild(cancel); acts.appendChild(rm); row.appendChild(acts);
+      if (confirmRemove === p.id) {
+        var n = giftsFor(p.id).length, c = el("div", "confirm"); c.style.gridColumn = "1/-1";
+        c.appendChild(el("span", null, "Remove " + p.name + (n ? " and their " + n + (n === 1 ? " present?" : " presents?") : "?")));
+        var yes = el("button", "btn sm danger", "Yes, remove"); yes.type = "button";
+        yes.addEventListener("click", function () { state.gifts = state.gifts.filter(function (g) { return g.personId !== p.id; }); state.people = state.people.filter(function (x) { return x.id !== p.id; }); openEdit = null; confirmRemove = null; changed(); });
+        var no = el("button", "btn sm", "Keep"); no.type = "button"; no.addEventListener("click", function () { confirmRemove = null; renderPeopleList(); });
+        c.appendChild(yes); c.appendChild(no); row.appendChild(c);
+      }
+      row.appendChild(msg);
+      row.querySelector(".msg").style.gridColumn = "1/-1";
+      box.appendChild(row);
+    });
+  }
+
+  function renderQuick() {
+    var has = state.people.length > 0;
+    $("qa-empty").hidden = has; $("qa-body").hidden = !has;
+    if (whoFor && !personById(whoFor)) whoFor = has ? state.people[0].id : null;
+    if (!whoFor && has) whoFor = state.people[0].id;
+    var box = $("qa-who"); box.textContent = "";
+    state.people.forEach(function (p) {
+      var b = el("button", "chip", p.name); b.type = "button";
+      b.setAttribute("aria-pressed", String(p.id === whoFor));
+      b.addEventListener("click", function () { whoFor = p.id; renderQuick(); $("qa-item").focus(); });
+      box.appendChild(b);
+    });
+  }
+
+  function giftShown(g) {
+    if (filter === "toorder") return !g.ordered;
+    if (filter === "waiting") return g.ordered && !g.received;
+    if (filter === "done") return g.received;
+    return true;
+  }
+
+  function renderPeople() {
+    var box = $("people"); box.textContent = "";
+    if (!state.people.length) { box.appendChild(el("p", "empty", "Start by adding the people you're buying for at the top.")); return; }
+    var any = false;
+    state.people.forEach(function (p) {
+      var list = giftsFor(p.id), shown = list.filter(giftShown);
+      if (filter !== "all" && !shown.length) return;
+      any = true;
+      var total = spent(list), over = p.budget > 0 && total > p.budget;
+      var card = el("section", "card"); card.setAttribute("aria-label", p.name);
+
+      var h = el("div", "person-h");
+      h.appendChild(el("h3", null, p.name));
+      h.appendChild(el("span", "sum" + (over ? " over" : ""), p.budget > 0 ? money(total) + " of " + money(p.budget) + (over ? " · over by " + money(total - p.budget) : "") : money(total) + " · no budget set"));
+      card.appendChild(h);
+      if (p.budget > 0) { var m = el("div", "meter" + (over ? " over" : "")); var i = el("i"); i.style.width = Math.min(100, total / p.budget * 100) + "%"; m.appendChild(i); card.appendChild(m); }
+
+      var gl = el("div", "gifts");
+      if (!list.length) gl.appendChild(el("p", "empty", "No presents yet."));
+      shown.forEach(function (g) {
+        var row = el("div", "gift" + (g.received ? " done" : ""));
+        var left = el("div");
+        var it = el("div", "it");
+        if (/^https?:\/\//i.test(g.link || "")) { var a = el("a", null, g.item + " ↗"); a.href = g.link; a.target = "_blank"; a.rel = "noopener noreferrer"; it.appendChild(a); } else it.textContent = g.item;
+        left.appendChild(it);
+        left.appendChild(el("div", "pr", g.price ? money(g.price) : "No price yet"));
+        var ticks = el("div", "ticks");
+        [["ordered", "Ordered"], ["received", "Arrived"]].forEach(function (k) {
+          var lab = el("label", "tick"), cb = el("input"); cb.type = "checkbox"; cb.checked = !!g[k[0]];
+          cb.addEventListener("change", function () { g[k[0]] = cb.checked; if (k[0] === "received" && cb.checked) g.ordered = true; changed(); });
+          lab.appendChild(cb); lab.appendChild(document.createTextNode(k[1])); ticks.appendChild(lab);
+        });
+        var del = el("button", "x", "×"); del.type = "button"; del.setAttribute("aria-label", "Remove " + g.item);
+        del.addEventListener("click", function () { state.gifts = state.gifts.filter(function (x) { return x.id !== g.id; }); changed(); });
+        ticks.appendChild(del);
+        row.appendChild(left); row.appendChild(ticks); gl.appendChild(row);
+      });
+      card.appendChild(gl);
+
+      var acts = el("div", "acts");
+      var add = el("button", "btn sm primary", "+ Add a present for " + p.name); add.type = "button";
+      add.addEventListener("click", function () { whoFor = p.id; renderQuick(); $("quick").scrollIntoView({ behavior: "smooth", block: "start" }); setTimeout(function () { $("qa-item").focus(); }, 300); });
+      acts.appendChild(add);
+      card.appendChild(acts);
+      box.appendChild(card);
+    });
+    if (!any) box.appendChild(el("p", "empty", filter === "toorder" ? "Everything's ordered. Nice." : filter === "waiting" ? "Nothing waiting to arrive." : "Nothing has arrived yet."));
+  }
+
+  start();
+})();
+</script>
+</body>
+</html>

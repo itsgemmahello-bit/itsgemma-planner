@@ -1,0 +1,14 @@
+{
+  "name": "itsgemma-christmas",
+  "private": true,
+  "version": "1.0.0",
+  "description": "@itsgemma__ Christmas planner: free sign-up, one personal planner per person (Netlify + Netlify Blobs + Klaviyo)",
+  "scripts": {
+    "test": "node --test tests/run.js",
+    "dev": "netlify dev"
+  },
+  "dependencies": {
+    "@netlify/blobs": "8.1.0"
+  },
+  "engines": { "node": ">=20" }
+}
