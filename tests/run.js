@@ -25,7 +25,7 @@ for (const n of ['signup', 'session', 'me', 'save', 'resend-link', 'logout', 'de
 const fn = (n) => mods[n];
 let ipN = 0;
 const call = (name, { method = 'POST', body, cookie = '' } = {}) =>
-  fn(name).handler({ httpMethod: method, headers: { cookie, 'x-nf-client-connection-ip': `10.0.0.${++ipN % 250}` }, body: body ? JSON.stringify(body) : '' });
+  fn(name).run({ httpMethod: method, headers: { cookie, 'x-nf-client-connection-ip': `10.0.0.${++ipN % 250}` }, body: body ? JSON.stringify(body) : '' });
 const cookieOf = (r) => (r.headers['Set-Cookie'] || '').split(';')[0];
 const data = (r) => JSON.parse(r.body);
 

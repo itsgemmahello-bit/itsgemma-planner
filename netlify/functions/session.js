@@ -18,5 +18,5 @@ const handler = safe(async (event) => {
   return json(200, { ok: true }, { 'Set-Cookie': A.setCookie(user.id) });
 });
 
-export { handler };
+export { handler as run };
 export default v2(handler);

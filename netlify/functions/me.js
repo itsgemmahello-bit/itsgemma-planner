@@ -13,5 +13,5 @@ const handler = safe(async (event) => {
   return json(200, { name: user.name, email: user.email, planner });
 });
 
-export { handler };
+export { handler as run };
 export default v2(handler);

@@ -20,5 +20,5 @@ const handler = safe(async (event) => {
   return json(200, { ok: true }, { 'Set-Cookie': A.clearCookie() });
 });
 
-export { handler };
+export { handler as run };
 export default v2(handler);

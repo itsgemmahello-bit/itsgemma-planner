@@ -20,5 +20,5 @@ const handler = safe(async (event) => {
   return json(200, { ok: true, message: SAME });
 });
 
-export { handler };
+export { handler as run };
 export default v2(handler);
