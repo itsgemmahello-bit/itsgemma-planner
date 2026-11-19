@@ -23,4 +23,3 @@ const handler = safe(async (event) => {
 
 export { handler };
 export default v2(handler);
-export const config = { path: '/api/save' };
