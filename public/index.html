@@ -148,7 +148,8 @@ header.top{padding:26px 0 0;display:flex;justify-content:space-between;align-ite
 .meter.over i{background:var(--bad)}
 .gifts{display:grid}
 .gift{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:6px 12px;align-items:center;padding:10px 0;border-top:1px solid var(--line)}
-.gift .it{font-weight:800;overflow-wrap:anywhere}
+.gift .it{font-weight:800;overflow-wrap:break-word}
+@media (max-width:560px){.gift{grid-template-columns:minmax(0,1fr)}.gift .ticks{justify-content:flex-start}.gift .ticks .x{margin-left:auto}}
 .gift .it a{text-decoration:none;border-bottom:1px dashed currentColor}
 .gift .pr{font-size:14px;color:var(--muted);font-weight:700}
 .gift .ticks{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
@@ -178,11 +179,11 @@ footer.foot{display:flex;justify-content:space-between;align-items:center;gap:10
       <span class="sig">@itsgemma__</span>
       <span class="kicker">Free Christmas planner</span>
       <h1>Every present, for every person, on one page.</h1>
-      <p class="sub" style="margin-top:12px">Add everyone you're buying for, give each one a budget, and tick presents off when they're ordered and when they arrive. It saves as you go and works on your phone and your laptop.</p>
+      <p class="sub" style="margin-top:12px">Add everyone you're buying for, give each one a budget, and tick presents off when they're ordered and when they arrive or you've bought them. It saves as you go and works on your phone and your laptop.</p>
       <ul class="points">
         <li>See exactly what you've spent and what's left, person by person</li>
         <li>Paste the link to a present so you can find it again</li>
-        <li>Ordered and arrived ticks, so nothing goes missing in the post</li>
+        <li>Tick it when it's ordered, and again when it arrives or you've bought it in store</li>
       </ul>
       <div class="mock" aria-hidden="true">
         <span class="eg">Example</span>
@@ -250,7 +251,7 @@ footer.foot{display:flex;justify-content:space-between;align-items:center;gap:10
           <div class="tile"><div class="v" id="t-planned">£0</div><div class="l">On presents so far</div></div>
           <div class="tile" id="t-left-tile"><div class="v" id="t-left">£0</div><div class="l" id="t-left-l">Left to spend</div></div>
           <div class="tile"><div class="v" id="t-ordered">0</div><div class="l" id="t-ordered-l">Ordered</div></div>
-          <div class="tile"><div class="v" id="t-arrived">0</div><div class="l" id="t-arrived-l">Arrived</div></div>
+          <div class="tile"><div class="v" id="t-arrived">0</div><div class="l" id="t-arrived-l">Arrived or bought</div></div>
         </div>
       </section>
 
@@ -288,7 +289,7 @@ footer.foot{display:flex;justify-content:space-between;align-items:center;gap:10
         <button class="chip" type="button" data-f="all" aria-pressed="true">Everything</button>
         <button class="chip" type="button" data-f="toorder" aria-pressed="false">Still to order</button>
         <button class="chip" type="button" data-f="waiting" aria-pressed="false">Waiting to arrive</button>
-        <button class="chip" type="button" data-f="done" aria-pressed="false">Arrived</button>
+        <button class="chip" type="button" data-f="done" aria-pressed="false">Arrived or bought</button>
       </div>
       <div id="people" style="display:grid;gap:14px"></div>
 
@@ -481,7 +482,7 @@ footer.foot{display:flex;justify-content:space-between;align-items:center;gap:10
     $("t-left-l").textContent = left < 0 ? "Over budget" : "Left to spend";
     $("t-left-tile").className = "tile" + (left < 0 ? " over" : "");
     $("t-ordered").textContent = o; $("t-ordered-l").textContent = "Ordered, of " + n;
-    $("t-arrived").textContent = r; $("t-arrived-l").textContent = "Arrived, of " + n;
+    $("t-arrived").textContent = r; $("t-arrived-l").textContent = "Arrived or bought, of " + n;
     var now = new Date(), xmas = new Date(now.getFullYear(), 11, 25);
     if (now > new Date(now.getFullYear(), 11, 26)) xmas = new Date(now.getFullYear() + 1, 11, 25);
     var d = Math.ceil((xmas - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 864e5);
@@ -549,7 +550,7 @@ footer.foot{display:flex;justify-content:space-between;align-items:center;gap:10
   }
 
   function giftShown(g) {
-    if (filter === "toorder") return !g.ordered;
+    if (filter === "toorder") return !g.ordered && !g.received;
     if (filter === "waiting") return g.ordered && !g.received;
     if (filter === "done") return g.received;
     return true;
@@ -582,9 +583,9 @@ footer.foot{display:flex;justify-content:space-between;align-items:center;gap:10
         left.appendChild(it);
         left.appendChild(el("div", "pr", g.price ? money(g.price) : "No price yet"));
         var ticks = el("div", "ticks");
-        [["ordered", "Ordered"], ["received", "Arrived"]].forEach(function (k) {
+        [["ordered", "Ordered"], ["received", "Arrived / bought"]].forEach(function (k) {
           var lab = el("label", "tick"), cb = el("input"); cb.type = "checkbox"; cb.checked = !!g[k[0]];
-          cb.addEventListener("change", function () { g[k[0]] = cb.checked; if (k[0] === "received" && cb.checked) g.ordered = true; changed(); });
+          cb.addEventListener("change", function () { g[k[0]] = cb.checked; changed(); });
           lab.appendChild(cb); lab.appendChild(document.createTextNode(k[1])); ticks.appendChild(lab);
         });
         var del = el("button", "x", "×"); del.type = "button"; del.setAttribute("aria-label", "Remove " + g.item);
@@ -601,7 +602,7 @@ footer.foot{display:flex;justify-content:space-between;align-items:center;gap:10
       card.appendChild(acts);
       box.appendChild(card);
     });
-    if (!any) box.appendChild(el("p", "empty", filter === "toorder" ? "Everything's ordered. Nice." : filter === "waiting" ? "Nothing waiting to arrive." : "Nothing has arrived yet."));
+    if (!any) box.appendChild(el("p", "empty", filter === "toorder" ? "Everything's ordered. Nice." : filter === "waiting" ? "Nothing waiting to arrive." : "Nothing arrived or bought yet."));
   }
 
   start();
