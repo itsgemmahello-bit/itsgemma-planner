@@ -254,7 +254,7 @@ footer.foot{display:flex;justify-content:space-between;align-items:center;gap:10
           <div class="tile"><div class="v" id="t-planned">£0</div><div class="l">On presents so far</div></div>
           <div class="tile" id="t-left-tile"><div class="v" id="t-left">£0</div><div class="l" id="t-left-l">Left to spend</div></div>
           <div class="tile"><div class="v" id="t-ordered">0</div><div class="l" id="t-ordered-l">Orders placed</div></div>
-          <div class="tile"><div class="v" id="t-arrived">0</div><div class="l" id="t-arrived-l">Arrived or bought</div></div>
+          <div class="tile"><div class="v" id="t-arrived">0</div><div class="l" id="t-arrived-l">Arrived / Bought</div></div>
         </div>
       </section>
 
@@ -292,7 +292,7 @@ footer.foot{display:flex;justify-content:space-between;align-items:center;gap:10
         <button class="chip" type="button" data-f="all" aria-pressed="true">Everything</button>
         <button class="chip" type="button" data-f="toorder" aria-pressed="false">Still to order</button>
         <button class="chip" type="button" data-f="waiting" aria-pressed="false">Waiting to arrive</button>
-        <button class="chip" type="button" data-f="done" aria-pressed="false">Arrived or bought</button>
+        <button class="chip" type="button" data-f="done" aria-pressed="false">Arrived / Bought</button>
       </div>
       <div id="people" style="display:grid;gap:14px"></div>
 
@@ -485,7 +485,7 @@ footer.foot{display:flex;justify-content:space-between;align-items:center;gap:10
     $("t-left-l").textContent = left < 0 ? "Over budget" : "Left to spend";
     $("t-left-tile").className = "tile" + (left < 0 ? " over" : "");
     $("t-ordered").innerHTML = o + " <small>of " + n + "</small>"; $("t-ordered-l").textContent = "Orders placed";
-    $("t-arrived").innerHTML = r + " <small>of " + n + "</small>"; $("t-arrived-l").textContent = "Arrived or bought";
+    $("t-arrived").innerHTML = r + " <small>of " + n + "</small>"; $("t-arrived-l").textContent = "Arrived / Bought";
     var now = new Date(), xmas = new Date(now.getFullYear(), 11, 25);
     if (now > new Date(now.getFullYear(), 11, 26)) xmas = new Date(now.getFullYear() + 1, 11, 25);
     var d = Math.ceil((xmas - new Date(now.getFullYear(), now.getMonth(), now.getDate())) / 864e5);
@@ -586,7 +586,7 @@ footer.foot{display:flex;justify-content:space-between;align-items:center;gap:10
         left.appendChild(it);
         left.appendChild(el("div", "pr", g.price ? money(g.price) : "No price yet"));
         var ticks = el("div", "ticks");
-        [["ordered", "Ordered"], ["received", "Arrived / bought"]].forEach(function (k) {
+        [["ordered", "Ordered"], ["received", "Arrived / Bought"]].forEach(function (k) {
           var lab = el("label", "tick"), cb = el("input"); cb.type = "checkbox"; cb.checked = !!g[k[0]];
           cb.addEventListener("change", function () { g[k[0]] = cb.checked; changed(); });
           lab.appendChild(cb); lab.appendChild(document.createTextNode(k[1])); ticks.appendChild(lab);
