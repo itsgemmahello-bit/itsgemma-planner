@@ -77,6 +77,8 @@ input[type=text],input[type=email],input[type=number],input[type=url]{font:inher
 .mock .eg{font-size:12px;color:var(--muted);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
 .check{display:grid;grid-template-columns:22px minmax(0,1fr);gap:8px;align-items:start;font-size:14px;color:var(--fg)}
 .check input{width:20px;height:20px;margin:2px 0 0;accent-color:var(--pink)}
+.check.optin{background:color-mix(in srgb,var(--pink) 12%,transparent);border:1px solid color-mix(in srgb,var(--pink) 40%,transparent);border-radius:12px;padding:12px}
+.check.optin strong{display:block;margin-bottom:2px}
 .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
 
 /* Planner shell */
@@ -201,7 +203,7 @@ footer.foot{display:flex;justify-content:space-between;align-items:center;gap:10
       <form id="signup" class="card" style="box-shadow:none;border:0;padding:0;background:none" novalidate>
         <label class="f" for="su-name">First name<input id="su-name" name="name" type="text" autocomplete="given-name" maxlength="40" required></label>
         <label class="f" for="su-email">Email<input id="su-email" name="email" type="email" autocomplete="email" maxlength="200" required></label>
-        <label class="check" for="su-news"><input id="su-news" name="news" type="checkbox"><span>Yes, send me Gem's emails too: the little things that take the mental load off. Unsubscribe any time.</span></label>
+        <label class="check optin" for="su-news"><input id="su-news" name="news" type="checkbox"><span><strong>Yes please, keep me on track.</strong> A few short emails before Christmas with what to sort next, plus first look at Gem's family hub in the new year. Unsubscribe any time.</span></label>
         <div class="hp" aria-hidden="true"><label for="su-website">Leave this empty</label><input id="su-website" name="website" type="text" tabindex="-1" autocomplete="off"></div>
         <button class="btn primary big" id="su-go" type="submit">Start my planner</button>
         <p class="note">We'll email you your own link too, so you can open your planner on any device. <a href="/privacy.html">How your details are used</a>.</p>
